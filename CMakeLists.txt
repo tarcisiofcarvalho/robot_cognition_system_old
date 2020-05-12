@@ -8,12 +8,42 @@ project(robot_cognition_system)
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
-  bridge_cv
+  cv_bridge
   pcl_ros
   roscpp
   rospy
-  std_msg
+  std_msgs
 )
+
+## Find PCL 
+# find_package(PCL)
+# include_directories(${PCL_INCLUDE_DIRS})
+# link_directories(${PCL_LIBRARY_DIRS})
+# add_definitions(${PCL_DEFINITIONS})
+# message("*** PCL setup done ***")
+
+## Find VTK 
+# find_package(VTK 5.8)
+# set(VTK_LIBRARIES vtkRendering vtkGraphics vtkHybrid QVTK)# vtkRendering vtkGraphics vtkHybrid QVTK)  #--> the spec
+# include(${VTK_USE_FILE})
+# message(STATUS "VTK_KITS--- ${VTK_KITS}")
+# message(STATUS "VTK_LIBRARY_DIRS--- ${VTK_LIBRARY_DIRS}")
+# message(STATUS "VTK_FOUND --- ${VTK_FOUND}")
+# message("*** VTK setup done ***")
+
+# --------------------------------------
+# Qt 4 Setup
+# --------------------------------------
+# set(Qt4_DIR "/home/osboxes/qt-4.8.6-build/qt-everywhere-opensource-src-4.8.6/bin/qmake")
+# find_package(Qt4 REQUIRED QtCore QtNetwork QtGui QtOpenGL QtWebkit)
+# link_directories(${QT_LIBRARY_DIR})
+# link_directories(${QT_BINARY_DIR})
+# add_definitions(${QT_DEFINITIONS})   #required to use QT and gui
+# include(${QT_USE_FILE})
+# set(QT_QMAKE_EXECUTABLE)
+# QT4_WRAP_CPP (PCL_upd_DEMO_HEADERS_MOC   ${PCL_upd_DEMO_HEADERS})
+# QT4_WRAP_UI  (PCL_upd_DEMO_FORMS_HEADERS ${PCL_upd_DEMO_FORMS})
+# message("*** QT setup done ***")
 
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
@@ -70,10 +100,10 @@ find_package(catkin REQUIRED COMPONENTS
 # )
 
 ## Generate added messages and services with any dependencies listed here
-# generate_messages(
-#   DEPENDENCIES
-#   std_msgs  # Or other packages containing msgs
-# )
+generate_messages(
+  DEPENDENCIES
+  std_msgs  # Or other packages containing msgs
+)
 
 ################################################
 ## Declare ROS dynamic reconfigure parameters ##
@@ -104,12 +134,12 @@ find_package(catkin REQUIRED COMPONENTS
 ## LIBRARIES: libraries you create in this project that dependent projects also need
 ## CATKIN_DEPENDS: catkin_packages dependent projects also need
 ## DEPENDS: system dependencies of this project that dependent projects also need
-catkin_package(
+# catkin_package(
 #  INCLUDE_DIRS include
 #  LIBRARIES robot_cognition_system
-#  CATKIN_DEPENDS bridge_cv pcl_ros roscpp rospy std_msg
+#  CATKIN_DEPENDS cv_bridge pcl_ros roscpp rospy
 #  DEPENDS system_lib
-)
+# )
 
 ###########
 ## Build ##
@@ -135,7 +165,8 @@ include_directories(
 ## Declare a C++ executable
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide
-# add_executable(${PROJECT_NAME}_node src/robot_cognition_system_node.cpp)
+add_executable(upd_publisher src/upd_publisher.cpp)
+add_executable(upd_subscriber src/upd_subscriber.cpp)
 
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
@@ -145,12 +176,23 @@ include_directories(
 
 ## Add cmake target dependencies of the executable
 ## same as for the library above
-# add_dependencies(${PROJECT_NAME}_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+add_dependencies(upd_publisher ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+add_dependencies(upd_subscriber ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 ## Specify libraries to link a library or executable target against
-# target_link_libraries(${PROJECT_NAME}_node
-#   ${catkin_LIBRARIES}
-# )
+target_link_libraries(upd_publisher 
+  # Qt4::QtGui 
+  # QVTK
+  # ${PCL_LIBRARIES} 
+  ${catkin_LIBRARIES}
+)
+
+target_link_libraries(upd_subscriber 
+  # Qt4::QtGui 
+  # QVTK
+  # ${PCL_LIBRARIES} 
+  ${catkin_LIBRARIES}
+)
 
 #############
 ## Install ##
