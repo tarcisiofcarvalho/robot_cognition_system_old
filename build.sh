@@ -6,10 +6,10 @@ clear
 cd ../../
 
 # Cleaning up the current build data
-rm -rf build/robot_cognition_system
+rm -rf build/robot_cognition_system build/robot_cognition_system
 
 # Creating make files
-catkin_make robot_cognition_system
+catkin_make -DCATKIN_WHITELIST_PACKAGES="robot_cognition_system"
 
 # Installing make files
-catkin_make install robot_cognition_system
+catkin_make install -DCATKIN_WHITELIST_PACKAGES="robot_cognition_system"

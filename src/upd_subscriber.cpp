@@ -14,8 +14,11 @@ void callback(const PointCloud::ConstPtr& msg)
 
 int main(int argc, char** argv)
 {
+  printf ("\t(%s)\n", "** ROS Init **");
   ros::init(argc, argv, "sub_upd");
   ros::NodeHandle nh;
+  printf ("\t(%s)\n", "** UPD callback **");
   ros::Subscriber sub = nh.subscribe<PointCloud>("upd_point_cloud_classification", 1, callback);
+  printf ("\t(%s)\n", "** UPD Callback finished **");
   ros::spin();
 }
