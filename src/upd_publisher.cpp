@@ -5,50 +5,39 @@
 #include <iostream>
 using namespace std;
 
+// PCL Cloud type definition
 typedef pcl::PointCloud<pcl::PointXYZ> PointCloud;
 
-PointCloud::ConstPtr msgNew;
-
-
+/* This function receives the OpenNI data from a kinect device, 
+    filter and classify the point cloud data with UPD classifier, 
+    and publish the UPD classified data */
 void process_upd(const PointCloud::ConstPtr& msg)
 {
-    msgNew = msg;
-    // cout << "publisher callback processing.....";
-    printf ("Cloud: width = %d, height = %d\n", msgNew->width, msgNew->height);
-    BOOST_FOREACH (const pcl::PointXYZ& pt, msgNew->points)
-    printf ("\t(%f, %f, %f)\n", pt.x, pt.y, pt.z);
+    // printf ("Cloud: width = %d, height = %d\n", msg->width, msg->height);
+    // BOOST_FOREACH (const pcl::PointXYZ& pt, msg->points)
+    // printf ("\t(%f, %f, %f)\n", pt.x, pt.y, pt.z);
+
     ros::NodeHandle nh;
     ros::Publisher pub = nh.advertise<PointCloud> ("upd_point_cloud_classification", 1);
-    pub.publish (msgNew);
+    pub.publish (msg);
+    ros::spin();
 }
 
 int main(int argc, char** argv){
     
+    // 1. ROS Init
+    printf("Info: 1. ROS Init \n");
     ros::init (argc, argv, "upd_node");
-    ros::NodeHandle nh;
-    ros::Publisher pub = nh.advertise<PointCloud> ("upd_point_cloud_classification", 1);
 
-    PointCloud::Ptr msg (new PointCloud);
-    msg->header.frame_id = "some_tf_frame";
-    msg->height = msg->width = 1;
-    msg->points.push_back (pcl::PointXYZ(1.0, 2.0, 3.0));
-
-    // Definig the node handler subscriber for kinect depth point cloud data
-    cout << "Subscribing to the kinect point cloud node";
+    // 2. Subscriber OpenNI
+    printf("Info: 2. Subscriber OpenNI \n");
     ros::NodeHandle nhk;
-    ros::Subscriber sub = nhk.subscribe<PointCloud>("/camera/depth/points", 1, process_upd);
-    ros::spin();
-    printf ("\t(%s)\n", "** calling the kinect **");
 
-    // ros::Rate loop_rate(4);
-    // while (nh.ok())
-    // {
-    //     printf ("\t message width: (%d)\n", msgNew->width);
-    //     //pcl_conversions::toPCL(ros::Time::now(), msgNew->header.stamp);
-    //     //pub.publish (msgNew);
-    //     ros::spinOnce ();
-    //     loop_rate.sleep ();
-    // }
+    // 3. Publishing UPD data 
+    printf("Info: 3. Publishing UPD data \n");
+    ros::Subscriber sub = nhk.subscribe<PointCloud>("/camera/depth/points", 1, process_upd);
+
+    ros::spin();
 }
 
 // class UPD_Publisher{
