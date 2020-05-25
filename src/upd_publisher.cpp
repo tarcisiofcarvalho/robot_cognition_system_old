@@ -21,12 +21,15 @@ using namespace std;
 typedef pcl::PointCloud<pcl::PointXYZRGBA> PointCloud;
 typedef pcl::PointCloud<pcl::PointXYZ> PointCloud2;
 typedef pcl::PointCloud<pcl::PointSurfel> PointCloudSurfel;
+typedef pcl::PointXYZRGBA PointT;
 
 
 
 pcl::io::OctreePointCloudCompression<pcl::PointXYZRGBA>* PointCloudEncoder;
 pcl::io::OctreePointCloudCompression<pcl::PointXYZRGBA>* PointCloudDecoder;
-pcl::visualization::CloudViewer viewer ("Show Points");
+pcl::visualization::PCLVisualizer viewer ("Show UPD");
+pcl::visualization::CloudViewer viewer2 ("Show Points");
+// boost::shared_ptr<pcl::visualization::PCLVisualizer> viewer2;
 // pcl::visualization::CloudViewer viewerUPD ("Show UPD");
 
 /*
@@ -254,7 +257,7 @@ void process_upd(const PointCloud::ConstPtr& msg)
     PointCloud::Ptr outputCloud (new PointCloud);
     PointCloud::Ptr cloudOut (new PointCloud);
     std::vector<int> indices;
-    pcl::removeNaNFromPointCloud(*newMsg,*outputCloud, indices);
+    pcl::removeNaNFromPointCloud(*msg2,*outputCloud, indices);
 
     // ******* Compress point cloud ********
     // stringstream to store compressed point cloud
@@ -298,18 +301,27 @@ void process_upd(const PointCloud::ConstPtr& msg)
     // 6.1 Prepare the parameters data
     PointCloud::Ptr m_cloud_color_UPD (new PointCloud);
 
-    double unevenness = 1;
+    double unevenness = 4;
     double unevennessMax = 10;
-    double radAngle = 80 * M_PI / 180;
+    double radAngle = 15 * M_PI / 180;
     
     // 6.2 Get colored map
     m_upd->setColorMapType(false);
     m_upd->getAsColorMap(m_cloud_color_UPD,
-                           (10000*unevenness)/unevennessMax,
+                           (unevenness)/unevennessMax,
 						   radAngle);
+     viewer.setBackgroundColor(0.05, 0.05, 0.05, 0);
 
-    if (!viewer.wasStopped()){
-          viewer.showCloud (m_cloud_color_UPD);
+    // if (!viewer.wasStopped ()) {
+    //     viewer.removePointCloud();
+    //     pcl::visualization::PointCloudColorHandlerRGBField<PointT> rgb_color(m_cloud_color_UPD);
+    //     viewer.addPointCloud (m_cloud_color_UPD, rgb_color, "cloud");
+    //     viewer.setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 2, "cloud");
+    //     viewer.spin ();
+    // }
+
+    if (!viewer2.wasStopped()){
+          viewer2.showCloud (m_cloud_color_UPD);
     }
     
     // 7. Publish the UPD classified point clouds
