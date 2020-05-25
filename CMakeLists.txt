@@ -145,17 +145,26 @@ generate_messages(
 ## Build ##
 ###########
 
+
+include_directories(${PCL_INCLUDE_DIRS})
+link_directories(${PCL_LIBRARY_DIRS})
+add_definitions(${PCL_DEFINITIONS})
+
 ## Specify additional locations of header files
 ## Your package locations should be listed before other locations
 include_directories(
 # include
   ${catkin_INCLUDE_DIRS}
+  ${PCL_INCLUDE_DIRS}
 )
+include_directories(${robot_cognition_system_SOURCE_DIR}/include)
+FILE(GLOB LIB_HEADERS "${robot_cognition_system_SOURCE_DIR}/include/*.h") 
 
 ## Declare a C++ library
 # add_library(${PROJECT_NAME}
-#   src/${PROJECT_NAME}/robot_cognition_system.cpp
+#   SHARED ${LIB_HEADERS}
 # )
+# add_library(upd_publisher ${LIB_HEADERS})
 
 ## Add cmake target dependencies of the library
 ## as an example, code may need to be generated before libraries
@@ -165,7 +174,7 @@ include_directories(
 ## Declare a C++ executable
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide
-add_executable(upd_publisher src/upd_publisher.cpp)
+add_executable(upd_publisher src/upd_publisher.cpp include/export.h include/upd.h)
 add_executable(upd_subscriber src/upd_subscriber.cpp)
 
 ## Rename C++ executable without prefix
@@ -185,6 +194,7 @@ target_link_libraries(upd_publisher
   # QVTK
   # ${PCL_LIBRARIES} 
   ${catkin_LIBRARIES}
+  "/home/tarcisio/NetBeansProjects/catkin_ws/src/robot_cognition_system/src/upd_lib/build/libupd_lib.so"
 )
 
 target_link_libraries(upd_subscriber 
